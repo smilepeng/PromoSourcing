@@ -1,0 +1,6 @@
+RewriteEngine On
+RewriteBase /PromoSourcing/
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{HTTPS} off
+RewriteRule (.*) https://%{HTTP_HOST}%index.php?$1 [L]
