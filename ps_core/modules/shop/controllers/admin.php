@@ -127,6 +127,9 @@ class Admin extends MX_Controller {
 				}
 				$tags = implode(', ', $tags);
 			}
+			
+			
+			$this->core->set['typeSafe'] = url_title(strtolower(trim($this->input->post('typeName'))));
 				
 			// set tags
 			$this->core->set['tags'] = $tags;
@@ -141,7 +144,7 @@ class Admin extends MX_Controller {
 				// update categories
 				$this->shop->update_cat_product_types($productTypeID, $this->input->post('catsArray'));
 				// update product fields
-				$this->shop->update_product_fields($productTypeID, $this->input->post('fieldsArray'));
+				$this->shop->update_type_fields($productTypeID, $this->input->post('fieldsArray'));
 				// update tags
 				$this->tags->update_tags('product_types', $productTypeID, $tags);
 					
@@ -381,7 +384,7 @@ class Admin extends MX_Controller {
 
 		// templates
 		$this->load->view($this->includes_path.'/header');
-		$this->load->view('admin/edit_product_field',$output);
+		$this->load->view('admin/add_product_field',$output);
 		$this->load->view($this->includes_path.'/footer');
 	}
 
@@ -425,11 +428,13 @@ class Admin extends MX_Controller {
 				// update
 				if ($this->core->update('product_fields', $objectID) && count($_POST))
 				{
+					$fieldName=$this->input->post('fieldName');	
+					$fieldSafe=url_title(strtolower(trim($fieldName)));					
 					$fieldType=$this->input->post('fieldType');	
 					$valueSet=$this->input->post('valueSet');	
 					$defaultValue=$this->input->post('defaultValue');
-					// update categories
-					$this->shop->update_related_product_table($productFieldID, $this->input->post('catsArray'));
+					// update requested_product and quoted_product
+					$this->shop->update_related_product_table($fieldSafe,$fieldType,$valueSet,$defaultValue);
 				
 					// set success message
 					$this->session->set_flashdata('success', 'Your changes were saved.');

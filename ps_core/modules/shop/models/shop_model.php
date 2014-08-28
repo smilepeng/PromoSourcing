@@ -387,6 +387,29 @@ class Shop_model extends CI_Model {
 
 		return TRUE;
 	}
+	function update_type_fields($productTypeID, $fieldArray = '')
+	{
+		// delete cats
+		$this->db->delete('product_type_field_map', array('productTypeID' => $productTypeID, 'siteID' => $this->siteID));
+
+		if ($fieldArray)
+		{
+			foreach($fieldArray as $fieldID => $field)
+			{
+				if ($field)
+				{					
+					$query = $this->db->get_where('product_type_field_map', array('productTypeID' => $productTypeID, 'fieldID' => $fieldID, 'siteID' => $this->siteID));
+					
+					if (!$query->num_rows())
+					{
+						$this->db->insert('product_type_field_map', array('productTypeID' => $productTypeID, 'fieldID' => $fieldID, 'siteID' => $this->siteID));
+					}
+				}
+			}
+		}
+
+		return TRUE;
+	}
 	/*
 	function get_bands()
 	{

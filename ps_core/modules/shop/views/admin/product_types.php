@@ -32,7 +32,7 @@ function initOrder(el){
 	});
 };
 function formatItem(row){
-	if (row[0].length) return row[1]+'<br /><span class="email">(#'+row[0]+')</span>';
+	if (row[0].length) return row[0]+'<br />';
 	else return 'No results';
 }
 $(function(){
@@ -60,8 +60,8 @@ $(function(){
 		<input type="image" src="<?php echo $this->config->item('staticPath'); ?>/images/btn_search.gif" id="searchbutton" />
 	</form>
 	
-	<label for="category">
-		Category
+	<label for="productType">
+		Product Types
 	</label> 
 
 	<?php
@@ -91,24 +91,19 @@ $(function(){
 	<thead>
 		<tr>
 			<th><?php echo order_link('admin/shop/product_types'.(($catID) ? '/'.$catID : ''),'typeName','Name', (($catID) ? 5 : 4)); ?></th>
-			<th><?php echo order_link('admin/shop/product_types'.(($catID) ? '/'.$catID : ''),'subtitle','Subtitle', (($catID) ? 5 : 4)); ?></th>
-			<th><?php echo order_link('admin/shop/product_types'.(($catID) ? '/'.$catID : ''),'catalogueID','Catalogue ID', (($catID) ? 5 : 4)); ?></th>
-			<th><?php echo order_link('admin/shop/product_types'.(($catID) ? '/'.$catID : ''),'dateCreated','Date added', (($catID) ? 5 : 4)); ?></th>
-			<th class="narrow"><?php echo order_link('admin/shop/product_types'.(($catID) ? '/'.$catID : ''),'price','Price ('.currency_symbol().')', (($catID) ? 5 : 4)); ?></th>
-			<?php if ($this->site->config['shopStockControl']): ?>
-				<th><?php echo order_link('/admin/shop/product_types'.(($catID) ? '/'.$catID : ''),'stock','Stock', (($catID) ? 5 : 4)); ?></th>
-			<?php endif; ?>
-			<th class="narrow"><?php echo order_link('/admin/shop/product_types'.(($catID) ? '/'.$catID : ''),'published','Published', (($catID) ? 5 : 4)); ?></th>
+			<th><?php echo order_link('admin/shop/product_types'.(($catID) ? '/'.$catID : ''),'cats','Categories', (($catID) ? 5 : 4)); ?></th>
+			<th><?php echo order_link('admin/shop/product_types'.(($catID) ? '/'.$catID : ''),'features','Features', (($catID) ? 5 : 4)); ?></th>
+		
 			<th class="tiny">&nbsp;</th>
 			<th class="tiny">&nbsp;</th>		
 		</tr>
 	</thead>
 	<tbody id="product_types">
 	<?php foreach ($product_types as $product_type): ?>
-		<tr class="<?php echo (!$product_type['published']) ? 'draft' : ''; ?>" id="product_types-<?php echo $product_type['productTypeID']; ?>">
-			<td class="col1"><?php echo (in_array('shop_edit', $this->permission->permissions)) ? anchor('/admin/shop/edit_product/'.$product_type['productTypeID'], $product_type['typeName']) : $product_type['typeName']; ?></td>
-
-			<td class="col4"><?php echo dateFmt($product_type['dateCreated'], '', '', TRUE); ?></td>
+		<tr class="" id="product_types-<?php echo $product_type['productTypeID']; ?>">
+			<td class="col1"><?php echo (in_array('shop_edit', $this->permission->permissions)) ? anchor('/admin/shop/edit_product_type/'.$product_type['productTypeID'], $product_type['typeName']) : $product_type['typeName']; ?></td>
+			<td class="col2"><?php echo   array_key_exists('catsName', $product_type)?$product_type['catNames']:''; ?></td>
+			<td class="col3"><?php echo   array_key_exists('catsName', $product_type)?$product_type['featureNames']:''; ?></td>
 			
 			<td class="col8 tiny">
 				<?php if (in_array('shop_edit', $this->permission->permissions)): ?>	
