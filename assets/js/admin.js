@@ -1,8 +1,25 @@
 (function(){$.fn.insertAtCaret=function(e,f){if(!f)f='';return this.each(function(){if(document.selection){this.focus();d=document.selection.createRange();d.text=e+d.text+f;return false}else if(this.selectionStart||this.selectionStart=='0'){var a=this.selectionStart;var b=this.selectionEnd;var c=this.scrollTop;var d=this.value.substring(a,b);if(e=="\t"){d=d.replace(/\n/ig,"\n\t")}this.value=this.value.substring(0,a)+(e+d+f)+this.value.substring(b,this.value.length);this.selectionStart=a+e.length;this.selectionEnd=a+e.length;this.scrollTop=c;return false}else{this.value+=e;return false}})};})();
 
+
+
+	$('img.framed').bind('click', function () {
+		$('.img_placeholder img').attr('src',  $(this).attr('src') );
+		$('.img_box').show();
+		return false;
+		});
+	
+	$('.img_placeholder').bind('click', function () {
+			$('.img_box').hide();
+			return false
+		});
+
+
+
 (function ($) {
 	var editactive = false;
 	var activeBlock = '';
+	
+	
 	function showForm(a) {
 		$url = a.href;
 		$('.showform').removeClass('active');
@@ -220,5 +237,16 @@
 			$('div.hidden').slideUp('100');
 			return false
 		});
+		
+		
 	});
+
+
+	
+
+	
+	
+	
+	
+	
 })(jQuery);

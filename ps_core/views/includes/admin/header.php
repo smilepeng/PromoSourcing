@@ -2,25 +2,25 @@
 	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
-	<link rel="icon" href="<?php echo $this->config->item('staticPath'); ?>/images/favicon.ico" type="image/x-icon" />
+	
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	
+	<link rel="stylesheet" type="text/css" href="<?php echo $this->config->item('staticPath'); ?>/css/reset.css" media="screen" />	
+	<link rel="stylesheet" type="text/css" href="<?php echo $this->config->item('staticPath'); ?>/css/style.css" media="all" />
+	<link rel="stylesheet" type="text/css" href="<?php echo $this->config->item('staticPath'); ?>/css/colors.css" media="all" />
+
+	<link rel="stylesheet" type="text/css" href="<?php echo $this->config->item('staticPath'); ?>/css/table.css" media="screen" />
+	<link rel="stylesheet" type="text/css" href="<?php echo $this->config->item('staticPath'); ?>/css/form.css" media="screen" />
+	<link rel="stylesheet" type="text/css" href="<?php echo $this->config->item('staticPath'); ?>/css/login.css" media="screen" />
+	<link rel="stylesheet" type="text/css" href="<?php echo $this->config->item('staticPath'); ?>/css/skeleton.css" media="screen" />
+	<link rel="stylesheet" type="text/css" href="<?php echo $this->config->item('staticPath'); ?>/css/files.css" media="screen" />
 	<link rel="stylesheet" type="text/css" href="<?php echo $this->config->item('staticPath'); ?>/css/admin.css" media="all" />
-	<link rel="stylesheet" type="text/css" href="<?php echo $this->config->item('staticPath'); ?>/css/lightbox.css" media="screen" />
-	<link rel="stylesheet" type="text/css" href="<?php echo $this->config->item('staticPath'); ?>/css/datepicker.css" media="screen" />
+
+	<link rel="icon" href="<?php echo $this->config->item('staticPath'); ?>/images/favicon.ico" type="image/x-icon" />	
+	
+	<script language="javascript" type="text/javascript" src="<?php echo $this->config->item('staticPath'); ?>/js/modernizr.custom.js"></script>
 	<script language="javascript" type="text/javascript" src="<?php echo $this->config->item('staticPath'); ?>/js/jquery.js"></script>
 	<script language="javascript" type="text/javascript" src="<?php echo $this->config->item('staticPath'); ?>/js/jquery.ui.js"></script>
-	<script language="javascript" type="text/javascript" src="<?php echo $this->config->item('staticPath'); ?>/js/jquery.lightbox.js"></script>
-	<script language="javascript" type="text/javascript" src="<?php echo $this->config->item('staticPath'); ?>/js/default.js"></script>
-	<script language="javascript" type="text/javascript" src="<?php echo $this->config->item('staticPath'); ?>/js/admin.js"></script>
-
-	<script language="JavaScript">			
-		$(function(){
-			$('ul#menubar li').hover(
-				function() { $('ul', this).css('display', 'block').parent().addClass('hover'); },
-				function() { $('ul', this).css('display', 'none').parent().removeClass('hover'); }
-			);			
-		});		
-	</script>		
 	
 	<title><?php echo (isset($this->site->config['siteName'])) ? $this->site->config['siteName'] : 'Login to'; ?> Admin - Promo Sourcing</title>
 	
@@ -77,53 +77,43 @@
 			<ul id="menubar">
 			<?php  if($this->session->userdata('session_user')): ?>
 				<?php if (in_array('requests', $this->permission->permissions)): ?>
-					<li><a href="<?php echo site_url('/admin/summary'); ?>">Summary</a>						
+					<li>
+					<a href="<?php echo site_url('/admin/summary'); ?>">Summary</a>		
+						<ul class="subnav">
+						
+							<li><a href="<?php echo site_url('/admin/requests/viewall_open'); ?>">All Open Requests</a></li>		
+							<li><a href="<?php echo site_url('/admin/requests/viewall_accepted'); ?>">All In-processing Requests</a></li>						
+							<li><a href="<?php echo site_url('/admin/requests/viewall_archived'); ?>">All Quoted Requests </a></li>
+					
+						</ul>
 					</li>
 
-					<li><a href="<?php echo site_url('/admin/requests/viewall'); ?>">Requests</a>
+					<li><a href="<?php echo site_url('/admin/requests/view_my_summary'); ?>">My Summary</a>
 						<ul class="subnav">
-							<li><a href="<?php echo site_url('/admin/requests/viewall'); ?>">All Requests</a></li>
 						<?php if (in_array('requests_edit', $this->permission->permissions)): ?>
-							<li><a href="<?php echo site_url('/admin/requests/add_request'); ?>">Add Request</a></li>
+							<li><a href="<?php echo site_url('/admin/requests/view_my_open'); ?>">My Open Requests</a></li>	
+							<li><a href="<?php echo site_url('/admin/requests/view_my_inprocess'); ?>">My In-processing Requests</a></li>	
+							<li><a href="<?php echo site_url('/admin/requests/view_my_completed'); ?>">My Completed Requests</a></li>
+						<?php endif; ?>	
+						<?php if (in_array('requests_accept', $this->permission->permissions)): ?>
+							<li><a href="<?php echo site_url('/admin/requests/view_my_accepted'); ?>">My Accepted Requests</a></li>	
+							<li><a href="<?php echo site_url('/admin/requests/view_my_quoted'); ?>">My Processed Requests</a></li>
+						<?php endif; ?>	
+						
+					
+						
+						<?php if (in_array('requests_edit', $this->permission->permissions)): ?>
+							<li><a href="<?php echo site_url('/admin/requests/add'); ?>">Add New Request</a></li>
 						<?php endif; ?>	
 						</ul>
 					</li>
 			
-					<li><a href="<?php echo site_url('/admin/quotes/viewall'); ?>">Accepted Quotes</a>
-						
-					</li>
-				
-					<li><a href="<?php echo site_url('/admin/requests/history'); ?>">History</a>
+					
+					<li><a href="<?php echo site_url('/admin/requests/archive'); ?>">History</a>
 						
 					</li>
 				<?php endif; ?>	
-				<?php if (in_array('pages_templates', $this->permission->permissions)): ?>
-					<li><a href="<?php echo site_url('/admin/pages/templates'); ?>">Templates</a>
-						<ul class="subnav">
-							<li><a href="<?php echo site_url('/admin/pages/templates'); ?>">All Templates</a></li>
-							<li><a href="<?php echo site_url('/admin/pages/includes'); ?>">Includes</a></li>
-							<li><a href="<?php echo site_url('/admin/pages/includes/css'); ?>">CSS</a></li>
-							<li><a href="<?php echo site_url('/admin/pages/includes/js'); ?>">Javascript</a></li>
-							<li><a href="<?php echo site_url('/admin/pages/includes/slide'); ?>">Slide</a></li>
-						</ul>
-					</li>
-				<?php endif; ?>	
-				<?php if (in_array('images', $this->permission->permissions)): ?>
-					<li><a href="<?php echo site_url('/admin/images/viewall'); ?>">Uploads</a>
-						<ul class="subnav">				
-							<li><a href="<?php echo site_url('/admin/images/viewall'); ?>">Images</a></li>
-							<?php if (in_array('images_all', $this->permission->permissions)): ?>
-								<li><a href="<?php echo site_url('/admin/images/folders'); ?>">Image Folders</a></li>
-							<?php endif; ?>
-							<?php if (in_array('files', $this->permission->permissions)): ?>
-								<li><a href="<?php echo site_url('/admin/files/viewall'); ?>">Files</a></li>
-								<?php if (in_array('files_all', $this->permission->permissions)): ?>								
-									<li><a href="<?php echo site_url('/admin/files/folders'); ?>">File Folders</a></li>						
-								<?php endif; ?>
-							<?php endif; ?>								
-						</ul>
-					</li>
-				<?php endif; ?>
+			
 				
 				<?php if (in_array('shop', $this->permission->permissions)): ?>
 					<li><a href="<?php echo site_url('/admin/shop/products'); ?>">Setting</a>

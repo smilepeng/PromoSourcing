@@ -8,28 +8,32 @@
 	});
 	</script>
 
-	<h1>Login</h1>
-	
-	<?php if ($errors = validation_errors()): ?>
-		<div class="error">
-			<?php echo $errors; ?>
-		</div>
-	<?php endif; ?>
-	
-	<form action="" method="post" class="default">
-					
-		<label for="username">Username:</label>
-		<input type="text" id="username" name="username" class="formelement" />
 
-		<br class="clear" />
-	
-		<label for="password">Password:</label>
-		<input type="password" id="password" name="password" class="formelement" />
+	<div id="container">
 
-		<br class="clear" /><br />
-		<input type="submit" id="login" name="login" value="Login" class="button nolabel" />
+		
+		
+		
+		<form action="" method="post" id="form-login">
+			<ul class="inputs  large">
+				<!-- The autocomplete="off" attributes is the only way to prevent webkit browsers from filling the inputs with yellow -->
+				<li><span class="icon-user mid-margin-right"></span><input type="text" 		id="username" name="username" placeholder="Login" 	class="input-unstyled"   /></li>
+				<li><span class="icon-lock mid-margin-right"></span><input type="password" 	id="password" name="password" placeholder="Password" class="input-unstyled"  /></li>
+			</ul>
+			
+			<button type="submit" class="button glossy full-width huge">Login</button>
+		</form>
+		<?php if ($errors = validation_errors()): ?>
+			
+				<div class="big-message red-gradient">
+					<span class="big-message-icon icon-warning with-text color"></span>
+					<?php echo $errors; ?>
+				</div>
+		<?php endif; ?>
+	</div>
 	
-	</form>
+	
+	
 
 <?php
 	} else {

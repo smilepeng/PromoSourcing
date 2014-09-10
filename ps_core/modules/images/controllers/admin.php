@@ -45,7 +45,7 @@ class Admin extends CI_Controller {
 		{
 			if (@$this->core->is_ajax())
 			{
-				die('<p>Sorry, you do not have permissions to do what you just tried to do. <a class="halogycms_close" href="#">Close</a></p>');
+				die('<p>Sorry, you do not have permissions to do what you just tried to do. </p>');
 			}
 			else
 			{			
@@ -83,6 +83,57 @@ class Admin extends CI_Controller {
 	{
 		redirect($this->redirect);
 	}
+	
+	
+	function upload_image_ajax()
+	{
+		if (count($_FILES))
+			{
+			$this->uploads->allowedTypes = 'jpg|gif|png';
+			// get image name
+			$oldFileName = @$_FILES['image']['name'];
+			
+			$imageName = preg_replace('/.([a-z]+)$/i', '', $oldFileName);
+					
+			// Unique name
+			$imageRef =url_title(trim(substr(strtolower($imageName),0,8))).  uniqid();
+			
+			if ($imageData = $this->uploads->upload_image())
+			{
+				$this->core->set['filename'] = $imageData['file_name'];
+				$this->core->set['filesize'] = $imageData['file_size'];						
+			}
+				
+			// get image errors if there are any
+			if ($this->uploads->errors)
+			{
+				echo '{"status":"error", "message":'.$this->uploads->errors .'}';
+
+			}
+			else
+			{						
+				// set image ref
+				$this->core->set['class'] = 'default';
+				$this->core->set['imageRef'] = $imageRef;
+				$this->core->set['imageName'] = ($this->input->post('imageName')) ? $this->input->post('imageName') : 'Image';
+				$this->core->set['dateCreated'] = date("Y-m-d H:i:s");
+				$this->core->set['userID'] = $this->session->userdata('userID');												
+
+				// update
+				if ($this->core->update('images'))
+				{
+					$json=array('status'=>'1', 'imgRef'=>$imageRef, 'message'=>'');
+					echo json_encode($json);
+				}			
+			}
+		}else{
+			$json=array('status'=>'0',  'imgRef'=>'', 'message'=>'Only images could be uploded.');
+					echo json_encode($json);
+		
+		}
+
+	}
+
 	
 	function viewall($folderID = '')
 	{

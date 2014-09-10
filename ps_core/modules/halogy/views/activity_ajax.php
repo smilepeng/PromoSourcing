@@ -1,4 +1,4 @@
-<?php if ($todaysActivity): $i=0; $title = ''; ?>
+<?php if ( isset($todaysActivity)): $i=0; $title = ''; ?>
 
 	<?php if ($recentActivity): ?>
 		<h3>Recent Activity</h3>
@@ -64,7 +64,7 @@
 	<p>Nothing has happened yet!</p>
 	
 <?php endif; ?>
-<?php if ($yesterdaysActivity): $i=0; $title = ''; ?>
+<?php if ( isset($yesterdaysActivity) ): $i=0; $title = ''; ?>
 
 	<h3>Yesterday</h3>
 

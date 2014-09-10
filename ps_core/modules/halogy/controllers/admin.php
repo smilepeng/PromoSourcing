@@ -136,29 +136,8 @@ class Admin extends MX_Controller {
 	
 	function summary()
 	{		
-		if (!$this->session->userdata('session_user'))
-		{
-			redirect('/admin/login/'.$this->core->encode($this->uri->uri_string()));
-		}
-
-		// load model and libs
-		$this->load->model('halogy_model', 'halogy');
-		$this->load->library('parser');
-
-	
-
-		// set message
-		$output['message'] = '';
-		
-		// get stats
-		$data['recentOpenRequests'] = $this->halogy->get_recent_open_requests();		
-		$data['recentAcceptedRequests'] = $this->halogy->get_recent_accepted_requests();
-		$data['recentCompletedRequests'] = $this->halogy->get_recent_archived_requests();
-		$output['activity'] = $this->parser->parse('activity_ajax', $data, TRUE);
-		
-		$this->load->view($this->includes_path.'/header');
-		$this->load->view('summary', $output);
-		$this->load->view($this->includes_path.'/footer');		
+		redirect('/admin/requests/summary');
+			
 	}
 
 	function stats($limit = 30)

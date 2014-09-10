@@ -123,7 +123,15 @@ $(function(){
 	<label for="lastName">Last Name:</label>
 	<?php echo @form_input('lastName',set_value('lastName', $data['lastName']), 'id="lastName" class="formelement"'); ?>
 	<br class="clear" />
-
+	<label for="language">Language</label>
+	<?php 
+		$values = array(
+			'EN' => 'English',
+			'CN' => 'Chinese'			
+		);
+		echo @form_dropdown('language',$values,set_value('language',  array_key_exists('language', $data )? $data['language']: ''), 'id="language" class="input float-left"'); 
+	?>
+	<br class="clear" />
 	
 
 	<label for="active">Active?</label>

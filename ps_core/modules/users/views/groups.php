@@ -15,12 +15,14 @@
 
 <?php echo $this->pagination->create_links(); ?>
 
-<table class="default clear">
+<table class="table responsive-table responsive-table-on dataTable">
+	<thead>
 	<tr>
-		<th><?php echo order_link('/admin/users/viewall','groupName','Group name'); ?></th>
+		<th><?php echo order_link('/admin/users/groups','groupName','Group name'); ?></th>
 		<th class="tiny">&nbsp;</th>
 		<th class="tiny">&nbsp;</th>		
 	</tr>
+	</thead>
 <?php foreach ($permission_groups as $group): ?>
 	<tr>
 		<td><?php echo (in_array('users_groups', $this->permission->permissions)) ? anchor('/admin/users/edit_group/'.$group['groupID'], $group['groupName']) : $group['groupName']; ?></td>

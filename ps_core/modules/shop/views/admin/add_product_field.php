@@ -73,7 +73,10 @@ $(function(){
 	<h2 class="underline">Product Feature Details</h2>
 	
 	<label for="productName">Product feature name:</label>
-	<?php echo @form_input('fieldName',set_value('fieldName', array_key_exists('fieldName', $data )?$data['fieldName']:''), 'id="fieldName" class="formelement"'); ?>
+	<?php echo @form_input('fieldName',set_value('fieldName', array_key_exists('fieldName', $data )?$data['fieldName']:''), 'id="fieldName" class="input float"'); ?>
+	<br class="clear" />
+	<label for="productName">ÖÐÎÄÃû³Æ:</label>
+	<?php echo @form_input('fieldNameCN',set_value('fieldNameCN', array_key_exists('fieldNameCN', $data )?$data['fieldNameCN']:''), 'id="fieldNameCN" class="input float-left"'); ?>
 	<br class="clear" />
 	<label for="productName">Type:</label>
 	<?php
@@ -85,19 +88,19 @@ $(function(){
 			'datetime' => 'Date time',
 		);
 		
-		echo @form_dropdown('fieldType', $options, set_value('fieldType',array_key_exists('fieldType', $data )?$data['fieldType']:''), 'id="fieldType" class="formelement"');
+		echo @form_dropdown('fieldType', $options, set_value('fieldType',array_key_exists('fieldType', $data )?$data['fieldType']:''), 'id="fieldType" class="input float"');
 	?>	
 	
 	<br class="clear" />
 	<label for="valueSet">Value Set:</label>
-	<?php echo @form_textarea('valueSet',set_value('valueSet', array_key_exists('valueSet', $data )?$data['valueSet']:''), 'id="valueSet" class="formelement short"'); ?>
+	<?php echo @form_textarea('valueSet',set_value('valueSet', array_key_exists('valueSet', $data )?$data['valueSet']:''), 'id="valueSet" class="input float-left"'); ?>
 	<span class="tip">Use ',' to separate each values. It will be used as drop down values in Combo Box.</span>
 	<br class="clear" />
 	<label for="sampleValue">Sample Value:</label>
-	<?php echo @form_input('sampleValue',set_value('sampleValue', array_key_exists('sampleValue', $data )?$data['sampleValue']:''), 'id="sampleValue" class="formelement"'); ?>
+	<?php echo @form_input('sampleValue',set_value('sampleValue', array_key_exists('sampleValue', $data )?$data['sampleValue']:''), 'id="sampleValue" class="input float"'); ?>
 	<br class="clear" />
 	<label for="defaultValue">Default Value:</label>
-	<?php echo @form_input('defaultValue',set_value('defaultValue', array_key_exists('defaultValue', $data )?$data['defaultValue']:''), 'id="defaultValue" class="formelement"'); ?>
+	<?php echo @form_input('defaultValue',set_value('defaultValue', array_key_exists('defaultValue', $data )?$data['defaultValue']:''), 'id="defaultValue" class="input float"'); ?>
 	<br class="clear" />
 	
 </div>

@@ -26,12 +26,7 @@ $(function(){
 			$(this).parent().addClass('hover');
 		}
 	});
-	$('a.showtab').click(function(event){
-		event.preventDefault();
-		var div = $(this).attr('href'); 
-		$('div#details, div#desc, div#variations').hide();
-		$(div).show();
-	});
+
 	$('ul.innernav a').click(function(event){
 		event.preventDefault();
 		$(this).parent().siblings('li').removeClass('selected'); 
@@ -41,19 +36,10 @@ $(function(){
 		event.preventDefault();
 		$(this).parent().parent().siblings('div').toggle('400');
 	});
-	if ($('input#variation1-1').val()){
-		$('div#variation1').children('div.showvars').show();
-	}
-	if ($('input#variation2-1').val()){
-		$('div#variation2').children('div.showvars').show();
-	}
-	if ($('input#variation3-1').val()){
-		$('div#variation3').children('div.showvars').show();
-	}	
-	$('div#desc, div#variations').hide();
+
 
 	$('input.save').click(function(){
-		var requiredFields = 'input#productName, input#catalogueID';
+		var requiredFields = 'input#typeName';
 		var success = true;
 		$(requiredFields).each(function(){
 			if (!$(this).val()) {
@@ -79,17 +65,15 @@ $(function(){
 	$('textarea#body').blur(function(){
 		preview(this);
 	});
-	$('a.lightbox').lightBox({imageLoading:'<?php echo $this->config->item('staticPath'); ?>/images/loading.gif',imageBtnClose: '<?php echo $this->config->item('staticPath'); ?>/images/lightbox_close.gif',imageBtnNext:'<?php echo $this->config->item('staticPath'); ?>/image/lightbox_btn_next.gif',imageBtnPrev:'<?php echo $this->config->item('staticPath'); ?>/image/lightbox_btn_prev.gif'});	
-	preview($('textarea#body'));	
+		
 });
 </script>
 
 <form method="post" action="<?php echo site_url($this->uri->uri_string()); ?>" enctype="multipart/form-data" class="default">
 
-<h1 class="headingleft">Edit Product <small>(<a href="<?php echo site_url('/admin/shop/products'); ?>">Back to Products</a>)</small></h1>
+<h1 class="headingleft">Edit Product Type <small>(<a href="<?php echo site_url('/admin/shop/product_types'); ?>">Back to Product types</a>)</small></h1>
 
-<div class="headingright">
-	<input type="submit" name="view" value="View Product" class="button blue save" />
+<div class="headingright">	
 	<input type="submit" value="Save Changes" class="button save" />
 </div>
 
@@ -108,48 +92,19 @@ $(function(){
 
 <ul class="innernav clear">
 	<li class="selected"><a href="#details" class="showtab">Details</a></li>
-	<li><a href="#desc" class="showtab">Description</a></li>
-	<li><a href="#variations" class="showtab">Options &amp; Variations</a></li>	
+	
 </ul>
 
 <br class="clear" />
 
 <div id="details" class="tab">
 
-	<h2 class="underline">Product Details</h2>
+	<h2 class="underline">Product Type Details</h2>
 	
-	<label for="productName">Product name:</label>
-	<?php echo @form_input('productName',set_value('productName', $data['productName']), 'id="productName" class="formelement"'); ?>
+	<label for="typeName">Type name:</label>
+	<?php echo @form_input('typeName',set_value('typeName', $data['typeName']), 'id="typeName" class="input float-left"'); ?>
 	<br class="clear" />
 
-	<label for="catalogueID">Catalogue ID:</label>
-	<?php echo @form_input('catalogueID',set_value('catalogueID', $data['catalogueID']), 'id="catalogueID" class="formelement"'); ?>
-	<span class="tip">This is for your own catalogue reference and stock keeping.</span>
-	<br class="clear" />
-
-	<label for="subtitle">Sub-title / Author:</label>
-	<?php echo @form_input('subtitle',set_value('subtitle', $data['subtitle']), 'id="subtitle" class="formelement"'); ?>
-	<br class="clear" />
-
-	<label for="tags">Tags: <br /></label>
-	<?php echo @form_input('tags', set_value('tags', $data['tags']), 'id="tags" class="formelement"'); ?>
-	<span class="tip">Separate tags with a comma (e.g. &ldquo;places, hobbies, favourite work&rdquo;)</span>
-	<br class="clear" />
-	
-	<label for="price">Price:</label>
-	<span class="price"><strong><?php echo currency_symbol(); ?></strong></span>
-	<?php echo @form_input('price',number_format(set_value('price', $data['price']),2,'.',''), 'id="price" class="formelement small"'); ?>
-	<br class="clear" />
-
-	<label for="image">Image:</label>
-	<div class="uploadfile">
-		<?php if ($imagePath):?>
-			<a href="<?php echo $imageThumbPath; ?>" title="<?php echo set_value('productName', $data['productName']); ?>" class="lightbox"><img src="<?php echo $imagePath; ?>" alt="Product image" class="pic" /></a>
-		<?php endif; ?>
-		<?php echo @form_upload('image',set_value('image', array_key_exists('image', $data)?$data['image']:''), 'size="16" id="image"'); ?>
-	</div>
-	<br class="clear" />
-	
 	<label for="category">Category: <small>[<a href="<?php echo site_url('/admin/shop/categories'); ?>" onclick="return confirm('You will lose any unsaved changes.\n\nContinue anyway?')">update</a>]</small></label>
 	<div class="categories">
 		<?php if ($categories): ?>
@@ -165,208 +120,34 @@ $(function(){
 		<?php endif; ?>
 	</div>
 	<br class="clear" /><br />
-
-	<h2 class="underline">Availability</h2>
 	
-	<label for="status">Status:</label>
-	<?php 
-		$values = array(
-			'S' => 'In stock',
-			'O' => 'Out of stock',
-			'P' => 'Pre-order'
-		);
-		echo @form_dropdown('status',$values,set_value('status', $data['status']), 'id="status" class="formelement"'); 
-	?>
-	<br class="clear" />
 	
-	<?php if ($this->site->config['shopStockControl']): ?>
-		<label for="stock">Stock:</label>
-		<?php echo @form_input('stock',set_value('stock', $data['stock']), 'id="stock" class="formelement small"'); ?>
-		<br class="clear" />
-	<?php endif; ?>	
-
-	<label for="featured">Featured?</label>
-	<?php 
-		$values = array(
-			'N' => 'No',
-			'Y' => 'Yes',
-		);
-		echo @form_dropdown('featured',$values,set_value('featured', $data['featured']), 'id="featured" class="formelement"'); 
-	?>
-	<span class="tip">Featured products will show on the shop front page.</span>
+	<label for="category">Feature: <small>[<a href="<?php echo site_url('/admin/shop/add_product_field'); ?>" onclick="return confirm('You will lose any unsaved changes.\n\nContinue anyway?')">Add Feature</a>]</small></label>
+	<div class="product_fields">
+		<?php if ($product_fields): ?>
+		<?php foreach($product_fields as $product_field): ?>
+			<div class="product_field<?php echo (isset($data['product_fields'][$product_field['product_fieldsID']])) ? ' hover' : ''; ?>">
+				<?php echo @form_checkbox('fieldsArray['.$product_field['product_fieldsID'].']', $product_field['fieldName'], (isset($data['product_fields'][$product_field['product_fieldsID']])) ? 1 : ''); ?><span><?php echo $product_field['fieldName']; ?></span>
+			</div>
+		<?php endforeach; ?>
+		<?php else: ?>
+			<div class="product_field">
+				<strong>Warning:</strong> It is strongly recommended that you use features or this may not appear properly. <a href="<?php echo site_url('/admin/blog/product_fields'); ?>" onclick="return confirm('You will lose any unsaved changes.\n\nContinue anyway?')"><strong>Please update your product features here</strong></a>.
+			</div>
+		<?php endif; ?>
+	</div>
+	<br class="clear" /><br />	
+		<label for="description">Description:</label>
+	<?php echo @form_textarea('description',set_value('description', array_key_exists('description', $data )?$data['description']:''), 'id="description" class="input float-left "'); ?>
 	<br class="clear" />
 	
-	<label for="published">Visible:</label>
-	<?php 
-		$values = array(
-			1 => 'Yes',
-			0 => 'No (hide product)',
-		);
-		echo @form_dropdown('published',$values,set_value('published', $data['published']), 'id="published"'); 
-	?>
+	<label for="tags">Tags: <br /></label>
+	<?php echo @form_input('tags', set_value('tags', $data['tags']), 'id="tags" class="input float-left"'); ?>
+	<span class="tip">Separate tags with a comma (e.g. &ldquo;places, hobbies, favourite work&rdquo;)</span>
 	<br class="clear" />
-
-</div>
-
-<div id="desc" class="tab">	
-
-	<h2 class="underline">Product Description</h2>
-		
-	<div class="buttons">
-		<a href="#" class="boldbutton"><img src="<?php echo $this->config->item('staticPath'); ?>/images/btn_bold.png" alt="Bold" title="Bold" /></a>
-		<a href="#" class="italicbutton"><img src="<?php echo $this->config->item('staticPath'); ?>/images/btn_italic.png" alt="Italic" title="Italic" /></a>
-		<a href="#" class="h1button"><img src="<?php echo $this->config->item('staticPath'); ?>/images/btn_h1.png" alt="Heading 1" title="Heading 1"/></a>
-		<a href="#" class="h2button"><img src="<?php echo $this->config->item('staticPath'); ?>/images/btn_h2.png" alt="Heading 2" title="Heading 2" /></a>
-		<a href="#" class="h3button"><img src="<?php echo $this->config->item('staticPath'); ?>/images/btn_h3.png" alt="Heading 3" title="Heading 3" /></a>	
-		<a href="#" class="urlbutton"><img src="<?php echo $this->config->item('staticPath'); ?>/images/btn_url.png" alt="Insert Link" title="Insert Link" /></a>
-		<a href="<?php echo site_url('/admin/images/browser'); ?>" class="halogycms_imagebutton"><img src="<?php echo $this->config->item('staticPath'); ?>/images/btn_image.png" alt="Insert Image" title="Insert Image" /></a>
-		<a href="<?php echo site_url('/admin/files/browser'); ?>" class="halogycms_filebutton"><img src="<?php echo $this->config->item('staticPath'); ?>/images/btn_file.png" alt="Insert File" title="Insert File" /></a>
-		<a href="#" class="previewbutton"><img src="<?php echo $this->config->item('staticPath'); ?>/images/btn_save.png" alt="Preview" title="Preview" /></a>	
-	</div>
-	<label for="body">Body:</label>
-	<?php echo @form_textarea('description', set_value('description', $data['description']), 'id="body" class="formelement code half"'); ?>
-	<div class="preview"></div>
-	<br class="clear" /><br />
-
-	<label for="excerpt">Excerpt:</label>
-	<?php echo @form_textarea('excerpt',set_value('excerpt', $data['excerpt']), 'id="excerpt" class="formelement short"'); ?>
-	<br class="clear" />
-	<span class="tip nolabel">The excerpt is a brief description of your product which is used in some templates.</span>
-	<br class="clear" /><br />
-
-</div>
-
-<div id="variations" class="tab">
-
-	<h2 class="underline">Options</h2>
-
-	<label for="freePostage">Free Shipping?</label>
-	<?php 
-		$values = array(
-			0 => 'No',
-			1 => 'Yes',
-		);
-		echo @form_dropdown('freePostage',$values,set_value('freePostage', $data['freePostage']), 'id="freePostage"'); 
-	?>
-	<br class="clear" />	
-
-	<label for="files">File:</label>
-	<?php
-		$options = '';
-		$options[0] = 'This product is not a file';			
-		if ($files):
-			foreach ($files as $file):
-				$ext = @explode('.', $file['filename']);
-				$options[$file['fileID']] = $file['fileRef'].' ('.strtoupper($ext[1]).')';
-			endforeach;
-		endif;					
-		echo @form_dropdown('fileID',$options,set_value('fileID', $data['fileID']),'id="files" class="formelement"');
-	?>
-	<span class="tip">You can make this product a downloadable file (e.g. a premium MP3 or document).</span>
-	<br class="clear" />
-
-	<label for="bands">Shipping Band:</label>
-	<?php
-		$options = '';
-		$options[0] = 'No product is not restricted';			
-		if ($bands):
-			foreach ($bands as $band):
-				$options[$band['bandID']] = $band['bandName'];
-			endforeach;
-		endif;					
-		echo @form_dropdown('bandID', $options, set_value('bandID', $data['bandID']),'id="bands" class="formelement"');
-	?>
-	<span class="tip">You can restrict this product to a shipping band if necessary.</span>
-	<br class="clear" /><br />
-
-
-	<h2 class="underline">Variations</h2>
-
-	<div id="variation1">
-		<div class="addvars">
-			<p><a href="#" class="addvar"><img src="<?php echo $this->config->item('staticPath'); ?>/images/btn_plus.gif" alt="Delete" class="padded" /> Add <?php echo $this->site->config['shopVariation1']; ?> Variations</a></p>
-			<br class="clear" />				
-		</div>
-		<div class="showvars" style="display: none;">
-
-			<?php foreach (range(1,5) as $x): $i = $x-1; ?>
-				
-			<label for="variation1-<?php echo $x; ?>"><?php echo $this->site->config['shopVariation1']; ?> <?php echo $x; ?>:</label>
-			<?php if ($variation1 && array_key_exists($i, $variation1)): echo @form_input('variation1-'.$x,set_value('variation1-'.$x, $variation1[$i]['variation']), 'id="variation1-'.$x.'" class="formelement"'); ?><span class="price"><strong><?php echo currency_symbol(); ?></strong></span><?php echo @form_input('variation1_price-'.$x, (is_numeric($variation1[$i]['price']) )?number_format(set_value('variation1_price-'.$x, $variation1[$i]['price']),2):'', 'class="formelement small"'); 
-		
-				else:
-				echo @form_input('variation1-'.$x,set_value('variation1-'.$x, ''), 'id="variation1-'.$x.'" class="formelement"'); ?>
-				<span class="price"><strong><?php echo currency_symbol(); ?>
-				</strong></span>
-				<?php echo @form_input('variation1_price-'.$x,'', 'class="formelement small"');
-				endif;
-			?>
-			
-			<br class="clear" />		
-
-			<?php 
-				
-			
-			
-			endforeach; ?>		
-										
-		</div>
-	</div>
-
-
-	<div id="variation2">
-		<div class="addvars">
-			<p><a href="#" class="addvar"><img src="<?php echo $this->config->item('staticPath'); ?>/images/btn_plus.gif" alt="Delete" class="padded" /> Add <?php echo $this->site->config['shopVariation2']; ?> Variations</a></p>
-			<br class="clear" />				
-		</div>
-		<div class="showvars" style="display: none;">
-			
-			<?php foreach (range(1,5) as $x): $i = $x-1; ?>
-				
-			<label for="variation2-<?php echo $x; ?>"><?php echo $this->site->config['shopVariation2']; ?> <?php echo $x; ?>:</label>
-			
-			<?php if ( $variation2 && array_key_exists($i, $variation2)): echo @form_input('variation2-'.$x,set_value('variation2-'.$x, $variation2[$i]['variation']), 'id="variation2-'.$x.'" class="formelement"'); ?><span class="price"><strong><?php echo currency_symbol(); ?></strong></span><?php echo @form_input('variation2_price-'.$x, (is_numeric($variation2[$i]['price']) )?number_format(set_value('variation2_price-'.$x, $variation2[$i]['price']),2):'', 'class="formelement small"'); 
-		
-				else:
-				echo @form_input('variation2-'.$x,set_value('variation2-'.$x, ''), 'id="variation2-'.$x.'" class="formelement"'); ?>
-				<span class="price"><strong><?php echo currency_symbol(); ?>
-				</strong></span>
-				<?php echo @form_input('variation2_price-'.$x,'', 'class="formelement small"');
-				endif;
-			?>
-			
-			<br class="clear" />		
-
-			<?php endforeach; ?>
-										
-		</div>
-	</div>
-
-	<div id="variation3">
-		<div class="addvars">
-			<p><a href="#" class="addvar"><img src="<?php echo $this->config->item('staticPath'); ?>/images/btn_plus.gif" alt="Delete" class="padded" /> Add <?php echo $this->site->config['shopVariation3']; ?> Variations</a></p>
-			<br class="clear" />				
-		</div>
-		<div class="showvars" style="display: none;">
-			
-			<?php foreach (range(1,5) as $x): $i = $x-1; ?>
-				
-			<label for="variation3-<?php echo $x; ?>"><?php echo $this->site->config['shopVariation3']; ?> <?php echo $x; ?>:</label>
-			<?php if ($variation3 &&  array_key_exists($i, $variation3)): echo @form_input('variation3-'.$x,set_value('variation3-'.$x, $variation3[$i]['variation']), 'id="variation3-'.$x.'" class="formelement"'); ?><span class="price"><strong><?php echo currency_symbol(); ?></strong></span><?php echo @form_input('variation3_price-'.$x, (is_numeric($variation3[$i]['price']) )?number_format(set_value('variation3_price-'.$x, $variation3[$i]['price']),2):'', 'class="formelement small"'); 
-		
-				else:
-				echo @form_input('variation3-'.$x,set_value('variation3-'.$x, ''), 'id="variation3-'.$x.'" class="formelement"'); ?>
-				<span class="price"><strong><?php echo currency_symbol(); ?>
-				</strong></span>
-				<?php echo @form_input('variation3_price-'.$x,'', 'class="formelement small"');
-				endif;
-			?>
-			<br class="clear" />		
-
-			<?php endforeach; ?>
-										
-		</div>
-	</div>
+	
+	
+	
 
 </div>
 

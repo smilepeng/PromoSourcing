@@ -74,7 +74,10 @@ class Admin extends MX_Controller {
 		{
 			$output['catID'] = '';
 		}
+		// check catID isnt paging or featured
+		$catID = ($catID == 'page'  || $catID == 'orderasc' || $catID == 'orderdesc') ? '' : $catID;
 		
+
 		// set limit
 		$limit =  $this->site->config['paging'] ;
 		
@@ -197,13 +200,6 @@ class Admin extends MX_Controller {
 			}
 			else
 			{
-				// set stock
-				if ($this->input->post('status') == 'O' || ($this->site->config['shopStockControl'] && !$this->input->post('stock')))
-				{
-					$this->core->set['stock'] = 0;
-					$this->core->set['status'] = 'O';
-				}
-					
 				// tidy tags
 				$tags = '';
 				if ($this->input->post('tags'))
@@ -217,60 +213,26 @@ class Admin extends MX_Controller {
 				
 				// set tags
 				$this->core->set['tags'] = $tags;
+				$this->core->set['dateModified'] = date("Y-m-d H:i:s");
+				$this->core->set['typeSafe'] = url_title(strtolower(trim($this->input->post('typeName'))));
 				
 				// update
 				if ($this->core->update('product_types', $objectID) && count($_POST))
 				{
-					/*
-					// clear variations
-					$this->shop->clear_variations($productTypeID);
+					// update map between categorie  and product type 
+					$this->shop->update_cat_product_types($productTypeID, $this->input->post('catsArray'));
+					// update map between product fields and product type 
+					$this->shop->update_type_fields($productTypeID, $this->input->post('fieldsArray'));
 					
-					// add variation 1
-					for ($x=1; $x<6; $x++)
-					{
-						if ($this->input->post('variation1-'.$x))
-						{
-							$varID = $this->shop->add_variation($productTypeID, 1, $this->input->post('variation1-'.$x), $this->input->post('variation1_price-'.$x));
-						}
-					}
-		
-					// add variation 2
-					for ($x=1; $x<6; $x++)
-					{
-						if ($this->input->post('variation2-'.$x))
-						{
-							$varID = $this->shop->add_variation($productTypeID,  2, $this->input->post('variation2-'.$x), $this->input->post('variation2_price-'.$x));
-						}
-					}
-
-					// add variation 3
-					for ($x=1; $x<6; $x++)
-					{
-						if ($this->input->post('variation3-'.$x))
-						{
-							$varID = $this->shop->add_variation($productTypeID, 3, $this->input->post('variation3-'.$x), $this->input->post('variation3_price-'.$x));
-						}
-					}
-					*/
-					// update categories
-					$this->shop->update_cats($productTypeID, $this->input->post('catsArray'));
-
 					// update tags
 					$this->tags->update_tags('product_types', $productTypeID, $tags);
 
 					// set success message
 					$this->session->set_flashdata('success', 'Your changes were saved.');
 
-					// view page
-					if ($this->input->post('view'))
-					{
-						redirect('/shop/'.$productTypeID.'/'.strtolower(url_title($this->input->post('typeName'))));
-					}
-					else
-					{																	
-						// where to redirect to
-						redirect('/admin/shop/edit_product/'.$productTypeID);
-					}
+					
+					redirect('/admin/shop/edit_product_type/'.$productTypeID);
+					
 				}
 			}		
 
@@ -282,12 +244,14 @@ class Admin extends MX_Controller {
 
 			
 			
-			// get categories
+			// get all categories
 			$output['categories'] = $this->shop->get_categories();
-			
+			// get all product fields
+			$output['product_fields'] = $this->shop->get_product_fields();
 			// get categories for this product
 			$output['data']['categories'] = $this->shop->get_cats_for_product_type($productTypeID);
-			
+			// get categories for this product
+			$output['data']['product_fields'] = $this->shop->get_features_for_product_type($productTypeID);
 	
 			// templates
 			$this->load->view($this->includes_path.'/header');
@@ -306,11 +270,14 @@ class Admin extends MX_Controller {
 				
 		if ($this->core->soft_delete('product_types', array('productTypeID' => $productTypeID)));
 		{
-			// remove category mappings
-			$this->shop->update_cats($productTypeID);
-
+			
+			// update categories
+			$this->shop->update_cat_product_types($productTypeID);
+			// update product fields
+			$this->shop->update_type_fields($productTypeID);
+			
 			// where to redirect to
-			redirect($this->redirect);
+			redirect('/admin/shop/product_types');
 		}
 	}
 
@@ -318,14 +285,29 @@ class Admin extends MX_Controller {
 	{		
 
 		// set limit
-		$limit =  $this->site->config['paging'] ;
 		
+		
+
+		// set limit
+		$limit =  $this->site->config['paging'] ;
 		// get products
 		$output['product_fields'] = $this->shop->get_product_fields( $this->input->post('searchbox'), $limit);
-		
-		
+
 		$this->load->view($this->includes_path.'/header');
 		$this->load->view('admin/product_fields',$output);
+		$this->load->view($this->includes_path.'/footer');
+	}
+	function ordered_product_fields()
+	{		
+
+		// set limit
+		$limit =  $this->site->config['paging'] ;
+		
+
+		$output['ordered_product_fields'] = $this->shop->get_ordered_product_fields( $limit);
+		
+		$this->load->view($this->includes_path.'/header');
+		$this->load->view('admin/order_product_fields',$output);
 		$this->load->view($this->includes_path.'/footer');
 	}
 
@@ -402,7 +384,7 @@ class Admin extends MX_Controller {
 		);
 
 		// where
-		$objectID = array('fieldID' => $productFieldID);	
+		$objectID = array('product_fieldsID' => $productFieldID);	
 
 		// get values
 		$output['data'] = $this->core->get_values('product_fields', $objectID);	
@@ -421,14 +403,14 @@ class Admin extends MX_Controller {
 			}
 			else
 			{
-			
 					// set date
 				$this->core->set['dateModified'] = date("Y-m-d H:i:s");
-			
+				//log_message('error', 'before CN:'.$$_POST['fieldNameCN']);
 				// update
 				if ($this->core->update('product_fields', $objectID) && count($_POST))
 				{
 					$fieldName=$this->input->post('fieldName');	
+					$fieldNameCN=$this->input->post('fieldNameCN');	
 					$fieldSafe=url_title(strtolower(trim($fieldName)));					
 					$fieldType=$this->input->post('fieldType');	
 					$valueSet=$this->input->post('valueSet');	
@@ -459,7 +441,7 @@ class Admin extends MX_Controller {
 			}
 
 			
-	
+			
 			// templates
 			$this->load->view($this->includes_path.'/header');
 			$this->load->view('admin/edit_product_field',$output);
@@ -637,9 +619,10 @@ class Admin extends MX_Controller {
 		}		
 	}
 
+	//
 	function order($field = '')
 	{
-		//log_message('error', 'Order: '.print_r($_POST, true).' Key: '.print_r(key($_POST), true)  );
+		
 		$this->core->order(key($_POST), $field);
 	}
 	
@@ -666,5 +649,6 @@ class Admin extends MX_Controller {
 		
 		$this->output->set_output($output);
 	}
-	
+
+
 }

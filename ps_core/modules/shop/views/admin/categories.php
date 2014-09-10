@@ -21,7 +21,7 @@ $(function(){
 <h1 class="headingleft">Shop Categories</h1>
 
 <div class="headingright">	
-	<a href="<?php echo site_url('/admin/shop/products'); ?>" class="button blue">View Products</a>
+	<a href="<?php echo site_url('/admin/shop/product_types'); ?>" class="button blue">View Product Types</a>
 	<a href="<?php echo site_url('/admin/shop/add_cat'); ?>" class="showform button blue">Add Category</a>
 </div>
 

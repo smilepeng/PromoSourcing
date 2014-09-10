@@ -115,18 +115,14 @@ class Shop_model extends CI_Model {
 	{
 	// set limit from uri if set
 		$limit = (!$limit && $limit != 'all') ? $this->siteVars['shopItemsPerPage'] : $limit;
-		
-		
 		// start cache
 		$this->db->start_cache();
 
-		
 		// search
 		if ($search)
 		{
 			$this->db->where('(fieldName LIKE "%'.$this->db->escape_like_str($search).'%" OR valueSet LIKE "%'.$this->db->escape_like_str($search).'%" OR sampleValue LIKE "%'.$this->db->escape_like_str($search).'%" )');
 		}
-		
 		
 		// set order
 		$order = FALSE;
@@ -148,9 +144,47 @@ class Shop_model extends CI_Model {
 			}
 		}
 		if (!$order)
-		{
-			$this->db->order_by('dateCreated','desc');
+		{			
+			$this->db->order_by('product_fieldsOrder', 'asc');		
+		}	
+		// default wheres
+		$this->db->where(array('product_fields.siteID' => $this->siteID, 'deleted' => 0));
+		
+		// stop cache
+		$this->db->stop_cache();
+			
+		// get total rows
+		$query = $this->db->get('product_fields');
+		
+		$totalRows = $query->num_rows();
+		//log_message('error', 'Fields:'.print_r($query,true).$totalRows );
+		// init paging
+		$this->core->set_paging($totalRows, $limit);
+		$query = $this->db->get('product_fields', $limit, $this->pagination->offset);
+		//log_message('error', 'Fields:'.print_r($query,true).$totalRows );		
+		// flush cache
+		$this->db->flush_cache();		
+			
+		if ($query->num_rows())
+		{	
+			return $query->result_array();
 		}
+		else
+		{
+			return FALSE;
+		}
+	}
+	
+	function get_ordered_product_fields( $limit)
+	{
+	
+		$limit = (!$limit && $limit != 'all') ? $this->siteVars['shopItemsPerPage'] : $limit;
+		
+		
+		// start cache
+		$this->db->start_cache();
+		
+		$this->db->order_by('product_fieldsOrder', 'asc');
 		
 		// default wheres
 		$this->db->where(array('product_fields.siteID' => $this->siteID, 'deleted' => 0));
@@ -171,6 +205,7 @@ class Shop_model extends CI_Model {
 			
 		if ($query->num_rows())
 		{
+			
 			return $query->result_array();
 		}
 		else
@@ -339,6 +374,38 @@ class Shop_model extends CI_Model {
 		}	
 	}
 	
+	function get_features_for_product_type($productTypeID)
+	{
+		// get cats for this product
+		// get cats for this product
+		$this->db->select('product_type_field_map.*, product_fields.* ');
+		$this->db->join('product_fields', 'product_type_field_map.product_fieldsID = product_fields.product_fieldsID', 'left');
+		$this->db->order_by('product_fieldsOrder', 'asc');
+		$this->db->where( array('productTypeID' => $productTypeID) );
+		
+		$query = $this->db->get('product_type_field_map' );
+		
+		
+	
+		if ($query->num_rows())
+		{
+			$fieldsArray = $query->result_array();
+			$fields = array();			
+			
+			foreach($fieldsArray as $field)
+			{
+				$fields[$field['product_fieldsID']] = $field['fieldName'];
+			}
+	
+			return $fields;
+		}
+		else
+		{
+			return FALSE;
+		}	
+	}
+	
+	
 	function get_cat_ids_for_product_type($productTypeID)
 	{
 		// get cats for this product
@@ -387,6 +454,8 @@ class Shop_model extends CI_Model {
 
 		return TRUE;
 	}
+	
+	
 	function update_type_fields($productTypeID, $fieldArray = '')
 	{
 		// delete cats
@@ -394,15 +463,15 @@ class Shop_model extends CI_Model {
 
 		if ($fieldArray)
 		{
-			foreach($fieldArray as $fieldID => $field)
+			foreach($fieldArray as $product_fieldsID => $field)
 			{
 				if ($field)
 				{					
-					$query = $this->db->get_where('product_type_field_map', array('productTypeID' => $productTypeID, 'fieldID' => $fieldID, 'siteID' => $this->siteID));
+					$query = $this->db->get_where('product_type_field_map', array('productTypeID' => $productTypeID, 'product_fieldsID' => $product_fieldsID, 'siteID' => $this->siteID));
 					
 					if (!$query->num_rows())
 					{
-						$this->db->insert('product_type_field_map', array('productTypeID' => $productTypeID, 'fieldID' => $fieldID, 'siteID' => $this->siteID));
+						$this->db->insert('product_type_field_map', array('productTypeID' => $productTypeID, 'product_fieldsID' => $product_fieldsID, 'siteID' => $this->siteID));
 					}
 				}
 			}
@@ -591,9 +660,10 @@ class Shop_model extends CI_Model {
 	{
 		// set limit from uri if set
 		$limit = (!$limit && $limit != 'all') ? $this->siteVars['shopItemsPerPage'] : $limit;
+		//log_message("error",'catID '.print_r($catID,true) );
 		
 		// get cat IDs
-		if ($catID && !$productsArray = $this->get_catmap_product_type_ids($catID))
+		if ($catID && !$productTypesArray = $this->get_catmap_product_type_ids($catID))
 		{
 			return FALSE;
 		}
@@ -605,27 +675,13 @@ class Shop_model extends CI_Model {
 		if ($catID)
 		{
 			// where category
-			$this->db->where_in('productTypeID', $productsArray);		
+			$this->db->where_in('productTypeID', $productTypesArray);		
 		}
-		
-		/*
-		// only select products for this admin user
-		if ($this->session->userdata('session_admin') && !@in_array('shop_all', $this->permission->permissions))
-		{
-			$this->db->where('userID', $this->session->userdata('userID'));
-		}
-		*/
-		// get published products for admin
-		/*
-		if ($this->uri->segment(1) != 'admin')
-		{
-			$this->db->where('published', 1);
-		}
-		*/
+			
 		// search
 		if ($search)
 		{
-			$this->db->where('(typeName LIKE "%'.$this->db->escape_like_str($search).'%" OR subtitle LIKE "%'.$this->db->escape_like_str($search).'%" OR description LIKE "%'.$this->db->escape_like_str($search).'%" OR catalogueID LIKE "%'.$this->db->escape_like_str($search).'%")');
+			$this->db->where('(typeName LIKE "%'.$this->db->escape_like_str($search).'%" OR tags LIKE "%'.$this->db->escape_like_str($search).'%" OR catNames LIKE "%'.$this->db->escape_like_str($search).'%" OR featureNames LIKE "%'.$this->db->escape_like_str($search).'%")');
 		}
 		
 		
@@ -634,7 +690,7 @@ class Shop_model extends CI_Model {
 		$uriArray = $this->uri->uri_to_assoc($this->uri_assoc_segment);
 		foreach($uriArray as $key => $value)
 		{
-			if ($value == 'typeName' || $value == 'description' || $value == 'dateCreated' )
+			if ($value == 'typeName' || $value == 'tags' || $value == 'featureNames' || $value == 'catNames')
 			{
 				if ($key == 'orderasc')
 				{
@@ -650,19 +706,29 @@ class Shop_model extends CI_Model {
 		}
 		if (!$order)
 		{
-			$this->db->order_by('dateCreated','desc');
+			$this->db->order_by('typeName','desc');
 		}
 		
-		// default wheres
-		$this->db->where(array('product_types.siteID' => $this->siteID, 'deleted' => 0));
 		
+		$this->db->join('cat_type_map', 'cat_type_map.productTypeID = product_types.productTypeID', 'left');
+		$this->db->join('cats', 'cat_type_map.catID = cats.catID', 'left');
+		
+		$this->db->join('product_type_field_map', 'product_type_field_map.productTypeID = product_types.productTypeID', 'left');
+		$this->db->join('product_fields', 'product_type_field_map.product_fieldsID = product_fields.product_fieldsID', 'left');
+		
+		// default wheres
+		$this->db->where(array('product_types.siteID' => $this->siteID, 'product_types.deleted' => 0));
+		$this->db->group_by("productTypeID"); 
+		
+		$this->db->select('product_types.*,  GROUP_CONCAT(distinct catName SEPARATOR "," )  AS catNames, GROUP_CONCAT(distinct fieldName SEPARATOR "," )  AS featureNames  ', FALSE);
 		// stop cache
 		$this->db->stop_cache();
 			
-		// get total rows
+			
+		// get total rows		
 		$query = $this->db->get('product_types');
 		$totalRows = $query->num_rows();
-
+		//log_message("error",'product_types '.print_r($query->result_array(),true) );
 		// init paging
 		$this->core->set_paging($totalRows, $limit);
 		$query = $this->db->get('product_types', $limit, $this->pagination->offset);
@@ -870,7 +936,7 @@ class Shop_model extends CI_Model {
 	function get_catmap_product_type_ids($catID)
 	{
 		// get rows based on this category
-		$this->db->join('cats', 'cats.catID = shop_catmap.catID');
+		$this->db->join('cats', 'cats.catID = cat_type_map.catID');
 		$this->db->where('cats.catID', $catID);
 		
 		// get result
@@ -882,10 +948,10 @@ class Shop_model extends CI_Model {
 			
 			foreach ($cats as $cat)
 			{
-				$productsArray[] = $cat['productID'];
+				$productTypesArray[] = $cat['productTypeID'];
 			}
 			
-			return $productsArray;
+			return $productTypesArray;
 		}
 		else
 		{
@@ -1240,6 +1306,14 @@ class Shop_model extends CI_Model {
 				$type= 'VARCHAR';
 				$constraint= '100';
 		}
+		
+		//-------Hack----
+		if( $type== 'ENUM' )
+			{
+				$type= 'VARCHAR';
+				$constraint= '200';
+			
+			}
 		$fields = array(
                     $fieldName => array(
 						'type' => $type,

@@ -59,7 +59,7 @@ $(function(){
 	<?php foreach ($permissions as $cat => $perms): ?>
 
 		<div class="perm-heading">
-			<label for="<?php echo strtolower($cat); ?>_all" class="radio"><?php echo $cat; ?></label>
+			<label for="<?php echo strtolower($cat); ?>_all" class="fradio"><?php echo $cat; ?></label>
 			<input type="checkbox" class="selectall checkbox" id="<?php echo strtolower($cat); ?>_all" />
 			<input type="button" value="See more" class="seemore small-button" />
 		</div>
@@ -68,7 +68,7 @@ $(function(){
 
 		<?php foreach ($perms as $perm): ?>
 
-			<label for="<?php echo 'perm_'.$perm['key']; ?>" class="radio"><?php echo $perm['permission']; ?></label>
+			<label for="<?php echo 'perm_'.$perm['key']; ?>" class="fradio"><?php echo $perm['permission']; ?></label>
 			<?php echo @form_checkbox('perm'.$perm['permissionID'], 1, set_value('perm'.$perm['permissionID'], (array_key_exists('perm'.$perm['permissionID'], $data))?$data['perm'.$perm['permissionID']]:''), 'id="'.'perm_'.$perm['key'].'" class="checkbox"'); ?>
 			<br class="clear" />
 

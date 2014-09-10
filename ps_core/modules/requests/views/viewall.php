@@ -42,6 +42,11 @@ $(function(){
 
 <?php echo $this->pagination->create_links(); ?>
 
+
+
+
+
+
 <table class="default clear">
 	<tr>
 		<th><?php echo order_link('/admin/requests/viewall','dateCreated','Date'); ?></th>
@@ -58,7 +63,7 @@ $(function(){
 	if ( $request['status']=='A' ) $class = 'class="blue"';
 	elseif ( $request['status']=='O' ) $class = 'class="orange"';
 
-	$requestname = $request['requestname'];
+	$requestname = $request['clientName'];
 	$requestlink = (in_array('requests_edit', $this->permission->permissions)) ? anchor('/admin/requests/edit/'.$request['requestID'], $request['productName']) : $productName;
 	
 ?>

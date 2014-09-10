@@ -11,7 +11,7 @@
 <form method="post" action="<?php echo site_url($this->uri->uri_string()); ?>" enctype="multipart/form-data" class="default">
 
 	<label for="catName">Title:</label>
-	<?php echo @form_input('catName', array_key_exists('catName', $data)? $data['catName']:'', 'class="formelement" id="catName"'); ?>
+	<?php echo @form_input('catName', array_key_exists('catName', $data)? $data['catName']:'', 'class="input " id="catName"'); ?>
 	<br class="clear" />
 		
 	<label for="templateID">Parent:</label>
@@ -25,12 +25,15 @@
 			endforeach;
 		endif;
 		
-		echo @form_dropdown('parentID',$options,array_key_exists('parentID', $data)? $data['parentID']:'','id="parentID" class="formelement"');
+		echo @form_dropdown('parentID',$options,array_key_exists('parentID', $data)? $data['parentID']:'','id="parentID" class="input"');
 	?>	
 	<br class="clear" />
 	
 	<label for="description">Description:</label>
-	<?php echo @form_textarea('description',set_value('description', array_key_exists('description', $data)? $data['description']:''), 'id="description" class="formelement short"'); ?>
+	
+	<?php
+	$description=array( "name"=>"description","id"=>"description","class"=>"input half-width", "rows"=>"4","value"=>array_key_exists('description', $data)? $data['description']:'' );
+	echo @form_textarea($description); ?>
 	<br class="clear" /><br />
 	
 	<input type="submit" value="Save Changes" class="button nolabel" />

@@ -241,6 +241,45 @@ class Uploads {
 		}
 	}
 
+	//ProductID could be a image file name
+	function load_product_images($productID, $thumbnail = false, $requested_product = false, $quoted_product=false)
+	{	
+		$pathToUploads = $this->uploadsPath;	//uploadsPath;
+		$images = array();
+		$imagePath ='';
+		if( !$productID)
+			return FALSE;
+		
+		$query = $this->CI->db->get_where( ($requested_product)? 'requested_products':'quoted_products', array('productID' => $productID, 'siteID' => $this->siteID));
+
+		if ($query->num_rows())
+		{
+			$row = $query->row_array();
+			$imgs = explode(',',  $row['imgs']);
+			$count=0;
+			foreach( $imgs as $imgName )
+			{
+				$images[$count]['imageName'] = $imgName;				
+				$images[$count]['imagePath'] =( ($imgName==$this->CI->config->item('noPictureFile'))? $this->CI->config->item('staticFolder').'/images' :$pathToUploads ) .'/'.$imgName;
+				if ($thumbnail)
+				{
+					$ext = substr($imgName,strrpos($imgName,'.'));
+					$thumbPath  = str_replace($ext, '', $images[$count]['imagePath']).'_thumb'.$ext;
+					$images[$count]['thumbPath'] = (file_exists('.'.$thumbPath)) ? $thumbPath : $images[$count]['imagePath'];
+				}
+				
+				$count++;
+			}						
+		}
+		else
+		{
+			return FALSE;
+		}
+	
+		
+	}
+
+	
 	function load_file($file, $ref = FALSE)
 	{	
 		// check there is something there!

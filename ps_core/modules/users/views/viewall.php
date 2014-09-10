@@ -50,7 +50,8 @@ $(function(){
 
 <?php echo $this->pagination->create_links(); ?>
 
-<table class="default clear">
+<table class="table responsive-table responsive-table-on dataTable">
+<thead>
 	<tr>
 		<th><?php echo order_link('/admin/users/viewall','username','Username'); ?></th>
 		<th><?php echo order_link('/admin/users/viewall','datecreated','Date Created'); ?></th>
@@ -60,6 +61,7 @@ $(function(){
 		<th class="tiny">&nbsp;</th>
 		<th class="tiny">&nbsp;</th>		
 	</tr>
+</thead>
 <?php foreach ($users as $user): ?>
 <?php 
 	$class = '';
@@ -98,7 +100,7 @@ $(function(){
 </table>
 
 <?php echo $this->pagination->create_links(); ?>
-
+<br/>
 <p style="text-align: right;"><a href="#" class="button grey" id="totop">Back to top</a></p>
 
 <?php else: ?>

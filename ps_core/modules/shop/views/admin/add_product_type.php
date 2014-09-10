@@ -115,7 +115,7 @@ $(function(){
 	<h2 class="underline">Product Type Details</h2>
 	
 	<label for="productName">Product type name:</label>
-	<?php echo @form_input('typeName',set_value('typeName', array_key_exists('typeName', $data )?$data['typeName']:''), 'id="typeName" class="formelement"'); ?>
+	<?php echo @form_input('typeName',set_value('typeName', array_key_exists('typeName', $data )?$data['typeName']:''), 'id="typeName" class="input float-left"'); ?>
 	<br class="clear" />
 	<label for="category">Category: <small>[<a href="<?php echo site_url('/admin/shop/categories'); ?>" onclick="return confirm('You will lose any unsaved changes.\n\nContinue anyway?')">update</a>]</small></label>
 	<div class="categories">
@@ -148,13 +148,13 @@ $(function(){
 	</div>
 	<br class="clear" /><br />	
 	<label for="description">Description:</label>
-	<?php echo @form_textarea('description',set_value('description', array_key_exists('description', $data )?$data['description']:''), 'id="description" class="formelement short"'); ?>
+	<?php echo @form_textarea('description',set_value('description', array_key_exists('description', $data )?$data['description']:''), 'id="description" class="input float-left "'); ?>
 	<br class="clear" />
 	<span class="tip nolabel">The description briefly describes what kind of product is in this templates.</span>
 	<br class="clear" /><br />
 		
 	<label for="tags">Tags: <br /></label>
-	<?php echo @form_input('tags', set_value('tags', array_key_exists('tags', $data )?$data['tags']:''), 'id="tags" class="formelement"'); ?>
+	<?php echo @form_input('tags', set_value('tags', array_key_exists('tags', $data )?$data['tags']:''), 'id="tags" class="input float-left"'); ?>
 	<span class="tip">Separate tags with a comma (e.g. &ldquo;places, hobbies, favourite work&rdquo;)</span>
 	<br class="clear" />
 	

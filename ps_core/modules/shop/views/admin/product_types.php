@@ -19,7 +19,7 @@ var fixHelper = function (e, a) {
 			$('table.order .' + $(this).attr('class')).width($(this).width())
 		})
 	}
-	return a
+	return a;
 };
 function initOrder(el){
 	$(el).sortable({ 
@@ -87,12 +87,12 @@ $(function(){
 
 <?php echo $this->pagination->create_links(); ?>
 
-<table class="default clear<?php echo ($catID) ? ' order' : ''; ?>">
+<table class="table responsive-table responsive-table-on dataTable<?php echo ($catID) ? ' order' : ''; ?>">
 	<thead>
 		<tr>
 			<th><?php echo order_link('admin/shop/product_types'.(($catID) ? '/'.$catID : ''),'typeName','Name', (($catID) ? 5 : 4)); ?></th>
-			<th><?php echo order_link('admin/shop/product_types'.(($catID) ? '/'.$catID : ''),'cats','Categories', (($catID) ? 5 : 4)); ?></th>
-			<th><?php echo order_link('admin/shop/product_types'.(($catID) ? '/'.$catID : ''),'features','Features', (($catID) ? 5 : 4)); ?></th>
+			<th><?php echo order_link('admin/shop/product_types'.(($catID) ? '/'.$catID : ''),'catNames','Categories', (($catID) ? 5 : 4)); ?></th>
+			<th><?php echo order_link('admin/shop/product_types'.(($catID) ? '/'.$catID : ''),'featureNames','Features', (($catID) ? 5 : 4)); ?></th>
 		
 			<th class="tiny">&nbsp;</th>
 			<th class="tiny">&nbsp;</th>		
@@ -102,8 +102,8 @@ $(function(){
 	<?php foreach ($product_types as $product_type): ?>
 		<tr class="" id="product_types-<?php echo $product_type['productTypeID']; ?>">
 			<td class="col1"><?php echo (in_array('shop_edit', $this->permission->permissions)) ? anchor('/admin/shop/edit_product_type/'.$product_type['productTypeID'], $product_type['typeName']) : $product_type['typeName']; ?></td>
-			<td class="col2"><?php echo   array_key_exists('catsName', $product_type)?$product_type['catNames']:''; ?></td>
-			<td class="col3"><?php echo   array_key_exists('catsName', $product_type)?$product_type['featureNames']:''; ?></td>
+			<td class="col2"><?php echo   array_key_exists('catNames', $product_type)?$product_type['catNames']:''; ?></td>
+			<td class="col3"><?php echo   array_key_exists('featureNames', $product_type)?$product_type['featureNames']:''; ?></td>
 			
 			<td class="col8 tiny">
 				<?php if (in_array('shop_edit', $this->permission->permissions)): ?>	
@@ -119,9 +119,9 @@ $(function(){
 	<?php endforeach; ?>
 	</tbody>
 </table>
-
+<br/>
 <?php echo $this->pagination->create_links(); ?>
-
+<br/>
 <p style="text-align: right;"><a href="#" class="button grey" id="totop">Back to top</a></p>
 
 <?php else: ?>

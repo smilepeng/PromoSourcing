@@ -452,11 +452,11 @@ class Template {
 		$body = str_replace('{site:email}', $this->CI->site->config['siteEmail'], $body);
 		$body = str_replace('{site:tel}', $this->CI->site->config['siteTel'], $body);	
 		$body = str_replace('{site:address}', $this->CI->site->config['siteAddress'], $body); 	
-		$body = str_replace('{site:mapLongitude}', $this->CI->site->config['siteMapLongitude'], $body);
-		$body = str_replace('{site:mapLatitude}', $this->CI->site->config['siteMapLatitude'], $body);
-		$body = str_replace('{site:tradingHours}', $this->CI->site->config['siteTradingHours'], $body);
-		$body = str_replace('{site:currency}', $this->CI->site->config['currency'], $body);
-		$body = str_replace('{site:currency-symbol}', currency_symbol(), $body);
+		//$body = str_replace('{site:mapLongitude}', $this->CI->site->config['siteMapLongitude'], $body);
+		//$body = str_replace('{site:mapLatitude}', $this->CI->site->config['siteMapLatitude'], $body);
+		//$body = str_replace('{site:tradingHours}', $this->CI->site->config['siteTradingHours'], $body);
+		//$body = str_replace('{site:currency}', $this->CI->site->config['currency'], $body);
+		//$body = str_replace('{site:currency-symbol}', currency_symbol(), $body);
 
 		// logged in userdata
 		$body = str_replace('{userdata:id}', ($this->CI->session->userdata('userID')) ? $this->CI->session->userdata('userID') : '', $body);
@@ -1327,7 +1327,37 @@ class Template {
 		
 		return $body;
 	}
-
+	
+	function parse_image($imgSafe, $attrs='class="pic thumb framed" ')
+	{
+		if ($imageData = $this->get_image($imgSafe))
+		{
+					$imageHTML = display_image($imageData['src'], $imageData['imageName'], $imageData['maxsize'], 'id="'.$this->CI->core->encode($this->CI->session->userdata('lastPage').'|'.$imageData['imageID']).'" '.$attrs.'');
+					$imageHTML = preg_replace('/src=("[^"]*")/i', 'src="'.site_url('/images/'.$imageData['imageRef'].strtolower($imageData['ext'])).'"', $imageHTML);
+					return $imageHTML;
+		}else{
+					return '<img src="'.$this->CI->config->item('base_url').  $this->CI->config->item('staticFolder').'/images/'. $this->CI->config->item('noPictureFile') .'" '.$attrs.' name="no" />';
+		}
+	
+	}
+	//$imgString contains imgSafe s separate with ',' e.g. ass.jpg,asd.png
+	function parse_image_string($imgString, $attrs='class="pic thumb framed" ')
+	{
+		$images='';
+		$imgs = explode(',', $imgString);
+			if( count($imgs)>0 )
+			{
+				foreach( $imgs as $img)
+				{		
+					$images.= "<li>". $this->parse_image($img, $attrs) ."</li>";
+				}
+			}else
+			{
+				$images .= "<li>".'<img src="'.$this->CI->config->item('base_url').  $this->CI->config->item('staticFolder').'/images/'. $this->CI->config->item('noPictureFile') .'" '.$attrs.' name="no" />' ."</li>";
+			}
+		
+		return $images;
+	}
 	function get_image($imageRef)
 	{	
 		$this->CI->db->where('siteID', $this->siteID);
